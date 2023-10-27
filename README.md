@@ -105,7 +105,9 @@ $ ./download_model.py en
 
 4. In order to generate embeddings using the pre-trained model, please execute the [`embeddings.py`](/code/generate_embeddings/embeddings.py) script as shown below. This script uses the RELISH Tokenized npy file. Make sure to have the RELISH Tokenized.npy file within the directory under the data folder.
 
-`python3 code/generate_embeddings/embeddings.py --input data/RELISH_tokenized.npy --pre_trained_model fastText/cc.en.300.bin.gz --output data/pre_trained_model_embeddings.pkl`
+```
+python3 code/generate_embeddings/embeddings.py --input data/RELISH_tokenized.npy --pre_trained_model fastText/cc.en.300.bin.gz --output data/pre_trained_model_embeddings.pkl
+```
 
 
 
@@ -115,14 +117,18 @@ The [`run_embeddings.py`](/code/generate_embeddings/run_embeddings.py) script us
 
 To run this script, please execute the following command:
 
-`python3 code/generate_embeddings/run_embeddings.py --input "data/RELISH_tokenized.npy"`
+```
+python3 code/generate_embeddings/run_embeddings.py --input "data/RELISH_tokenized.npy"
+```
 
 The script will create fastText models, generate embeddings, and store them in separate directories. You should expect to find a total of 18 files corresponding to the various models, embeddings, and embedding pickle files.
 
 ### Step 3: Calculate Cosine Similarity
 In order to generate the cosine similarity matrix and execute this [script](/code/evaluation/generate_cosine_existing_pairs.py), run the following command:
 
-` python3 code/evaluation/generate_cosine_existing_pairs.py [-i INPUT] [-e EMBEDDINGS] [-o OUTPUT] [-c CORPUS]`
+```
+python3 code/evaluation/generate_cosine_existing_pairs.py [-i INPUT] [-e EMBEDDINGS] [-o OUTPUT] [-c CORPUS]
+```
 
 You must pass the following four arguments:
 
@@ -134,7 +140,9 @@ You must pass the following four arguments:
 
 For example, if you are running the code from the code folder and have the RELISH relevance matrix in the data folder, run the cosine matrix creation for the first hyperparameter as:
 
-`python3 code/evaluation/generate_cosine_existing_pairs.py -i data/RELISH/Relevance_Matrix/RELISH.tsv -e dataframe/embeddings_pickle_0.tsv -o data/cosine_similarity_0.tsv -c RELISH`
+```
+python3 code/evaluation/generate_cosine_existing_pairs.py -i data/RELISH/Relevance_Matrix/RELISH.tsv -e dataframe/embeddings_pickle_0.tsv -o data/cosine_similarity_0.tsv -c RELISH
+```
 
 
 ### Step 4: Hyperparameter Optimization
@@ -144,7 +152,9 @@ For example, if you are running the code from the code folder and have the RELIS
 ### Step 5: Precision@N
 In order to calculate the Precision@N scores and execute this [script](/code/evaluation/precision.py), run the follwing command:
 
-` python3 code/evaluation/precision.py [-c COSINE FILE PATH]  [-o OUTPUT PATH]`
+```
+python3 code/evaluation/precision.py [-c COSINE FILE PATH]  [-o OUTPUT PATH]
+```
 
 You must pass the following two arguments:
 
@@ -153,13 +163,17 @@ You must pass the following two arguments:
 
 For example, if you are running the code from the code folder and have the cosine similarity TSV file in the data folder, run the precision matrix creation for the first hyperparameter as:
 
-`python3 code/evalutaion/precision.py -c data/cosine_similarity_0.tsv -o data/precision_fasttext_0.tsv`
+```
+python3 code/evalutaion/precision.py -c data/cosine_similarity_0.tsv -o data/precision_fasttext_0.tsv
+```
 
 
 ### Step 6: nDCG@N
 In order to calculate nDCG scores and execute this [script](/code/evaluation/calculate_gain.py), run the following command:
 
-`python3 code/evaluation/calculate_gain.py [-i INPUT]  [-o OUTPUT]`
+```
+python3 code/evaluation/calculate_gain.py [-i INPUT]  [-o OUTPUT]
+```
 
 You must pass the following two arguments:
 
@@ -168,5 +182,7 @@ You must pass the following two arguments:
 
 For example, if you are running the code from the code folder and have the 4 column RELISH TSV file in the data folder, run the matrix creation for the first hyperparameter as:
 
-`python3 code/evaluation/calculate_gain.py -i data/cosine_similarity_0.tsv -o data/ndcg_fasttext_0.tsv`
+```
+python3 code/evaluation/calculate_gain.py -i data/cosine_similarity_0.tsv -o data/ndcg_fasttext_0.tsv
+```
 
