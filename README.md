@@ -214,3 +214,4 @@ For example, if you are running the code from the code folder and have the 4 col
 python3 code/evaluation/calculate_gain.py -i data/cosine_similarity_0.tsv -o data/ndcg_fasttext_0.tsv
 ```
 
+
