@@ -80,7 +80,35 @@ Ensure you have set up SSH keys in your GitHub account.
 
 `git clone git@github.com:zbmed-semtec/fasttext2doc2vec-doc-relevance.git`
 
-### Step 2: Generate Embeddings
+
+### Step 2: Create a virtual environment and install dependencies
+
+To create a virtual environment within your repository, run the following command:
+
+```
+python3 -m venv .venv 
+source .venv/bin/activate   # On Windows, use '.venv\Scripts\activate' 
+```
+
+To confirm if the virtual environment is activated and check the location of yourPython interpreter, run the following command:
+
+```
+which python    # On Windows command prompt, use 'where python'
+                # On Windows PowerShell, use 'Get-Command python'
+```
+The code is stable with python 3.6 and higher. The required python packages are listed in the requirements.txt file. To install the required packages, run the following command:
+
+```
+pip install -r code/requirements.txt
+```
+
+To deactivate the virtual environment after running the project, run the following command:
+
+```
+deactivate
+```
+
+### Step 3: Generate Embeddings
 
 #### Using Pre-trained model:
 1. Clone the FastText repository:
@@ -123,7 +151,7 @@ python3 code/generate_embeddings/run_embeddings.py --input "data/RELISH_tokenize
 
 The script will create fastText models, generate embeddings, and store them in separate directories. You should expect to find a total of 18 files corresponding to the various models, embeddings, and embedding pickle files.
 
-### Step 3: Calculate Cosine Similarity
+### Step 4: Calculate Cosine Similarity
 In order to generate the cosine similarity matrix and execute this [script](/code/evaluation/generate_cosine_existing_pairs.py), run the following command:
 
 ```
@@ -145,11 +173,11 @@ python3 code/evaluation/generate_cosine_existing_pairs.py -i data/RELISH/Relevan
 ```
 
 
-### Step 4: Hyperparameter Optimization
+### Step 5: Hyperparameter Optimization
 
 **_To be written_**
 
-### Step 5: Precision@N
+### Step 6: Precision@N
 In order to calculate the Precision@N scores and execute this [script](/code/evaluation/precision.py), run the follwing command:
 
 ```
@@ -168,7 +196,7 @@ python3 code/evalutaion/precision.py -c data/cosine_similarity_0.tsv -o data/pre
 ```
 
 
-### Step 6: nDCG@N
+### Step 7: nDCG@N
 In order to calculate nDCG scores and execute this [script](/code/evaluation/calculate_gain.py), run the following command:
 
 ```
