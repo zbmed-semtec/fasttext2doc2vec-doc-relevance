@@ -14,9 +14,6 @@ def compile_results(input_path, output_path):
 
     combined_list = []
 
-    # # Output file path
-    # output_path = '/home/ubuntu/doc2vec-doc-relevance/precision_new/precision__new_results.tsv'
-
     # Loop through the files
     for index, file in enumerate(all_files):
         file_path = input_path + file
