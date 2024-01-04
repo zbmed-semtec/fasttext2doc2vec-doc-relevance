@@ -34,27 +34,27 @@ def run(params_dict: dict, input_file: str):
         logging.info("RELISH fastText Model Generated")
 
         # Define a directory for storing models
-        models_directory = f"models/"
+        models_directory = f"data/models/"
 
         # Ensure the directory exists or create it
         if not os.path.exists(models_directory):
             os.makedirs(models_directory)
 
         # Save the model generated
-        em.save_model(model, f"data/models/fasttext_{idx}.model")
+        em.save_model(model, os.path.join(models_directory, f"fasttext_{idx}.model"))
         logging.info("RELISH Fasttext Model Saved")
 
         # Define a directory for storing embeddings
-        embeddings_directory = f"data/embeddings"
+        embeddings_directory = f"data/embeddings/"
 
         # Ensure the directory exists or create it
         if not os.path.exists(embeddings_directory):
             os.makedirs(embeddings_directory)
             
-        embeddings_filename = "embeddings_fasttext_{idx}.pkl"
+        embeddings_filename = f"embeddings_fasttext_{idx}.pkl"
 
         # Generate the embeddings
-        em.create_document_embeddings(pmids, docs, model, f"embeddings_directory/{embeddings_filename}")
+        em.create_document_embeddings(pmids, docs, model, os.path.join(embeddings_directory, embeddings_filename))
         logging.info("RELISH Embeddings Generated and Saved")
 
 

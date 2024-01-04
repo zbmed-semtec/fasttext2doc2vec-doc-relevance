@@ -39,9 +39,9 @@ def compile_results(input_path, output_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input', type=str,
-                        help="Path to the directory consisting of all the gain matrices..")
+                        help="Path to the directory consisting of all the precision/gain matrices.")
     parser.add_argument('-o', '--output', type=str, 
-                        help="Output path along with the name of the file to save the generated compiled nDCG@N TSV file.")
+                        help="Output path along with the name of the file to save the generated compiled precision@N/nDCG@N TSV file.")
     args = parser.parse_args()
     compile_results(args.input, args.output)
 

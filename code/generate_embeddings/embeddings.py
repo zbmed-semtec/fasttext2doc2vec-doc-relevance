@@ -35,17 +35,17 @@ def prepare_from_npy(filepathIn=None):
                 logging.alert("Wrong parameter type for prepareFromTSV.")
                 sys.exit("filepathIn needs to be of type string")
         else:
-                import numpy as np
                 doc = np.load(filepathIn, allow_pickle=True)
                 pmids = []
                 titles = []
                 abstracts = []
                 docs = []
                 for line in doc:
-                        pmids.append(np.ndarray.tolist(line[0]))
-                        titles.append(np.ndarray.tolist(line[1]))
-                        abstracts.append(np.ndarray.tolist(line[2]))
-                        docs.append(np.ndarray.tolist(line[1]) + np.ndarray.tolist(line[2]))
+                    if isinstance(line[0], (np.ndarray, np.generic)):
+                        pmids.append(line[0])
+                        titles.append(line[1])
+                        abstracts.append(line[2])
+                        docs.append(line[1] + line[2])
                 return (pmids, titles, abstracts, docs)
 
 
