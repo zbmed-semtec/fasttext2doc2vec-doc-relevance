@@ -41,8 +41,13 @@ def prepare_from_npy(filepathIn=None):
                 abstracts = []
                 docs = []
                 for line in doc:
-                    if isinstance(line[0], (np.ndarray, np.generic)):
-                        pmids.append(line[0])
+                    pmids.append(int(line[0]))
+                    if isinstance(line[1], (np.ndarray, np.generic)):
+                        titles.append(np.ndarray.tolist(line[1]))
+                        abstracts.append(np.ndarray.tolist(line[2]))
+                        docs.append(np.ndarray.tolist(
+                            line[1]) + np.ndarray.tolist(line[2]))
+                    else:
                         titles.append(line[1])
                         abstracts.append(line[2])
                         docs.append(line[1] + line[2])
@@ -108,7 +113,7 @@ def create_document_embeddings(pmids: list, documents: list, model, output_dir_p
     ----------
     accessions : list
         List of accession numbers.
-    functions : list
+    documents : list
         List of function comments.
     model : 
         Pretraine Fasttext model.
