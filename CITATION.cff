@@ -13,5 +13,5 @@ authors:
     orcid:  https://orcid.org/0000-0002-1018-0370
 version: 1.0.0
 date-released: "2023-10-10"
-license: GNU General Public License v3.0
+license: "https://spdx.org/licenses/GPL-3.0"
 repository-code: "https://github.com/zbmed-semtec/fasttext2doc2vec-doc-relevance"
