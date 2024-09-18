@@ -169,8 +169,8 @@ def create_document_embeddings(pmids: list, documents: list, model: FastText, it
 
     df = pd.DataFrame(list(zip((pmids), document_embeddings)), columns =['pmids', 'embeddings'])
     df = df.sort_values('pmids')
-    os.makedirs(f"{output_path}", exist_ok=True)
-    df.to_pickle(f'{output_path}/embeddings_{iteration}.pkl') 
+    os.makedirs(f"{output_dir_path}", exist_ok=True)
+    df.to_pickle(f'{output_dir_path}/embeddings_{iteration}.pkl') 
     print("Embeddings Generated")
 
 

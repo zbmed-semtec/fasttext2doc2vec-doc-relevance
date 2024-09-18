@@ -56,7 +56,7 @@ def get_identity_dcg_matrix(similarity_matrix: pd.DataFrame, output_file: str):
     similarity_matrix : pd.Dataframe
         Cosine similarity matrix.
     """
-    idcg_matrix = similarity_matrix.sort_values(['PMID1', 'relevance'],
+    idcg_matrix = similarity_matrix.sort_values(['PMID1', 'Relevance'],
                                                 ascending=[True, False], ignore_index=True)                                                
     idcg_matrix.index = idcg_matrix.index + 1
     idcg_matrix.to_csv(output_file, sep='\t')
@@ -176,9 +176,9 @@ if __name__ == "__main__":
         os.makedirs("./data/output/gain_matrices")
 
     similarity_matrix = load_cosine_sim_matrix(args.input)
-    get_dcg_matrix(similarity_matrix, f"./data/output/gain_matrices/dcg_{args.number}.tsv")
-    get_identity_dcg_matrix(similarity_matrix, f"./data/output/gain_matrices/idcg_{args.number}.tsv")
-    pmids, ndcg_matrix = fill_ndcg_scores(f"./data/output/gain_matrices/dcg_{args.number}.tsv", f"./data/output/gain_matrices/idcg_{args.number}.tsv")
+    get_dcg_matrix(similarity_matrix, f"./data/output/gain_matrices/dcg.tsv")
+    get_identity_dcg_matrix(similarity_matrix, f"./data/output/gain_matrices/idcg.tsv")
+    pmids, ndcg_matrix = fill_ndcg_scores(f"./data/output/gain_matrices/dcg.tsv", f"./data/output/gain_matrices/idcg.tsv")
     
     output_dir = os.path.dirname(args.output)
     if not os.path.exists(output_dir):

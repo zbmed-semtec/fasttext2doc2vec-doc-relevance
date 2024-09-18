@@ -19,7 +19,7 @@ def get_cosine_similarity(input_relevance_matrix: str, embeddings: str, output_m
         File path for the generated 4 column matrix.
     """
     embeddings_df = pd.read_pickle(embeddings)
-    relevance_matrix_df = pd.read_csv(input_relevance_matrix, names=column_names, sep="\t")
+    relevance_matrix_df = pd.read_csv(input_relevance_matrix, sep="\t")
     # Adds the empty 4th column to the file
     print('Read embeddings pickle file')
     relevance_matrix_df["Cosine Similarity"] = ""
