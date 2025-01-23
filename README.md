@@ -1,3 +1,7 @@
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+
+
+
 # FastText2Doc2Vec-Doc-relevance
 
 This repository focuses on an approach exploring and assessing literature-based doc-2-doc recommendations using the fastText algorithm with its application to the RELISH dataset.
@@ -8,13 +12,10 @@ This repository focuses on an approach exploring and assessing literature-based 
 2. [Input Data](#input-data)
 3. [Pipeline](#pipeline)
     1. [Generate Embeddings](#generate-embeddings)
-        - [Using Pre-trained fastText model](#using-pre-trained-fasttext-model)
-        - [Training our own fastText models](#generate-and-train-fasttext-models)
           - [Parameters](#parameters)
     2. [Format embeddings](#format-embeddings)
     3. [Calculate Cosine Similarity](#calculate-cosine-similarity)
-    4. [Hyperparameter Optimization](#hyperparameter-optimization)
-    5. [Evaluation](#evaluation)
+    4. [Evaluation](#evaluation)
         - [Precision@N](#precisionn)
         - [nDCG@N](#ndcgn)
 8. [Getting Started](#getting-started)
@@ -32,7 +33,7 @@ The input data for this method consists of preprocessed tokens derived from the 
 This section outlines the progression from generating document embeddings to conducting hyperparameter optimization and ultimately evaluating the effectiveness of the approach.
 
 ### Generate Embeddings
-The following section outlines the process of generating document-level embeddings for each PMID of the RELISH corpus using either the pre-trained fastText model or by training our own fastText models. We employ the parameters shown below in order to generate our models.
+The following section outlines the process of generating document-level embeddings for each PMID of the RELISH corpus using trained fastText models. We employ the parameters shown below in order to generate our models.
 
 
 ##### Parameters
@@ -48,9 +49,6 @@ After model training, we can extract document-level embeddings. These embeddings
 
 ## Calculate Cosine Similarity
 To assess the similarity between two documents within the RELISH corpus, we employ the Cosine Similarity metric. This process enables the generation of a 4-column matrix containing cosine similarity scores for existing pairs of PMIDs within our corpus. For a more detailed explanation of the process, please refer to this [documentation](https://github.com/zbmed-semtec/medline-preprocessing/tree/main/code/Cosine_Similarity).
-
-## Hyperparameter Optimization
-*To be written*
 
 ## Evaluation
 
@@ -73,13 +71,16 @@ First, clone the repository to your local machine using the following command:
 
 ###### Using HTTP:
 
-`git clone https://github.com/zbmed-semtec/fasttext2doc2vec-doc-relevance.git`
+```
+git clone https://github.com/zbmed-semtec/fasttext2doc2vec-doc-relevance.git
+```
 
 ###### Using SSH:
 Ensure you have set up SSH keys in your GitHub account.
 
-`git clone git@github.com:zbmed-semtec/fasttext2doc2vec-doc-relevance.git`
-
+```
+git clone git@github.com:zbmed-semtec/fasttext2doc2vec-doc-relevance.git
+```
 
 ### Step 2: Create a virtual environment and install dependencies
 
@@ -108,54 +109,56 @@ To deactivate the virtual environment after running the project, run the followi
 deactivate
 ```
 
-### Step 3: Generate Embeddings
+### Step 3: Dataset
 
-#### Using Pre-trained model:
-1. Clone the FastText repository:
+Use the Download_Dataset.sh script to download the Split Dataset by running the following commands:
 
- ``` 
-$ git clone https://github.com/facebookresearch/fastText.git
-$ cd fastText
-$ make
- ``` 
-
-2. Once the FastText is successfully built, navigate to the FastText directory and execute the following command to download the English model:
-
-``` 
-$ ./download_model.py en
-``` 
-
-3. After the download is complete, you will find the **'cc.en.300.bin.gz'** model file located in the FastText directory, accessible at the following path:
-
-``` 
-'./fastText/cc.en.300.bin.gz'
-``` 
-
-4. In order to generate embeddings using the pre-trained model, please execute the [`embeddings.py`](/code/generate_embeddings/embeddings.py) script as shown below. This script uses the RELISH Tokenized npy file. Make sure to have the RELISH Tokenized.npy file within the directory under the data folder.
 
 ```
-python3 code/generate_embeddings/embeddings.py --input data/RELISH_tokenized.npy --pre_trained_model fastText/cc.en.300.bin.gz --output data/pre_trained_model_embeddings.pkl
+chmod +777 Download_Dataset.sh
+./Download_Dataset.sh
+```
+
+This script makes sure that the necessary folders are created and the files are downloaded in the corresponding folders as shown below.
+
+```
+📦 /fasttext2doc2vec-doc-relevance
+└─ data
+   └─ Input
+      ├─ Tokens
+      │  ├─ relish.npy
+      └─ Ground_truth
+         └─ relevance_matrix.tsv
 ```
 
 
+### Step 4: Generate Embeddings
 
-#### Training our own models:
+The [`embeddings.py`](/code/embeddings.py) script uses the RELISH Tokenized npy file as input. You can easily adapt it for different values and parameters by modifying the [`hyperparameters.yaml`](./code/hyperparameters.yaml) . Make sure to have the RELISH Tokenized.npy file within the directory under the data folder.
 
-The [`run_embeddings.py`](/code/generate_embeddings/run_embeddings.py) script uses the RELISH Tokenized npy file as input and includes a default parameter dictionary with preset hyperparameters. You can easily adapt it for different values and parameters by modifying the `params_dict`. Make sure to have the RELISH Tokenized.npy file within the directory under the data folder.
+```
+python3 code/embeddings.py [-i INPUT PATH] [-o OUTPUT PATH] [-p PARAMS]
+```
+
+You must pass the following arguments:
+
++ -i/ --input : File path to the RELISH tokenized .npy file.
++ -o/ --output : File path to the resulting embeddings in pickle file format.
++ -p/ --params : File path to the hyperparameters YAML file.
 
 To run this script, please execute the following command:
 
 ```
-python3 code/generate_embeddings/run_embeddings.py --input "data/RELISH_tokenized.npy"
+python3 code/embeddings.py --input data/Input/Tokens/relish.npy --output data/embeddings --params code/hyperparameters.yaml 
 ```
 
 The script will create fastText models, generate embeddings, and store them in separate directories. You should expect to find a total of 18 files corresponding to the various models, embeddings, and embedding pickle files.
 
-### Step 4: Calculate Cosine Similarity
-In order to generate the cosine similarity matrix and execute this [script](/code/evaluation/generate_cosine_existing_pairs.py), run the following command:
+### Step 5: Calculate Cosine Similarity
+In order to generate the cosine similarity matrix and execute this [script](/code/generate_cosine_existing_pairs.py), run the following command:
 
 ```
-python3 code/evaluation/generate_cosine_existing_pairs.py [-i INPUT] [-e EMBEDDINGS] [-o OUTPUT] [-c CORPUS]
+python3 code/generate_cosine_existing_pairs.py [-i INPUT] [-e EMBEDDINGS] [-o OUTPUT] 
 ```
 
 You must pass the following four arguments:
@@ -163,44 +166,56 @@ You must pass the following four arguments:
 + -i/ --input : File path to the RELISH relevance matrix in the TSV format.
 + -e/ --embeddings : File path to the embeddings in the pickle file format.
 + -o/ --output : File path for the output 4 column cosine similarity matrix.
-+ -c / --corpus : Name of the corpus (RELISH).
 
 
 For example, if you are running the code from the code folder and have the RELISH relevance matrix in the data folder, run the cosine matrix creation for the first hyperparameter as:
 
 ```
-python3 code/evaluation/generate_cosine_existing_pairs.py -i data/RELISH/Relevance_Matrix/RELISH.tsv -e dataframe/embeddings_pickle_0.tsv -o data/cosine_similarity_0.tsv -c RELISH
+python3 code/generate_cosine_existing_pairs.py -i data/Input/Ground_truth/relevance_matrix.tsv -e data/embeddings/embeddings_0.pkl -o data/cosine/cosine_similarity_0.tsv
 ```
 
+Note: You would have to run the above command for every hyperparameter configuration by changing the file name for the embedding's pickle file or use the following shell script to generate all files at once.
 
-### Step 5: Hyperparameter Optimization
-
-**_To be written_**
+```
+for VALUE in {0..17};do
+python3 code/generate_cosine_existing_pairs.py -i data/Input/Ground_truth/relevance_matrix.tsv -e data/embeddings/embeddings_pickle_${VALUE}.pkl -o data/cosine/cosine_similarity_${VALUE}.tsv
+done
+```
 
 ### Step 6: Precision@N
-In order to calculate the Precision@N scores and execute this [script](/code/evaluation/precision.py), run the follwing command:
+In order to calculate the Precision@N scores and execute this [script](/code/precision.py), run the follwing command:
 
 ```
-python3 code/evaluation/precision.py [-c COSINE FILE PATH]  [-o OUTPUT PATH]
+python3 code/precision.py [-i COSINE FILE PATH]  [-o OUTPUT PATH]
 ```
 
 You must pass the following two arguments:
 
-+ -c/ --cosine_file_path: path to the 4-column cosine similarity existing pairs RELISH file: (tsv file)
++ -i/ --cosine_file_path: path to the 4-column cosine similarity existing pairs RELISH file: (tsv file)
 + -o/ --output_path: path to save the generated precision matrix: (tsv file)
 
 For example, if you are running the code from the code folder and have the cosine similarity TSV file in the data folder, run the precision matrix creation for the first hyperparameter as:
 
 ```
-python3 code/evalutaion/precision.py -c data/cosine_similarity_0.tsv -o data/precision_fasttext_0.tsv
+python3 code/precision.py -c data/cosine_similarity_0.tsv -o data/precision_fasttext_0.tsv
 ```
 
+Note: You would have to run the above command for every hyperparameter configuration by changing the file name for the cosine similarity file or use the following shell script to generate all files at once.
+
+
+```
+for VALUE in {0..17};do
+python3 code/precision.py -c data/cosine_similarity_${VALUE}.tsv -o data/precision_three_classes/precision_${VALUE}.tsv -c 3
+done
+```
+
+Note: Make sure to re-run the above command by changing the classes for a different class distribution.
 
 ### Step 7: nDCG@N
-In order to calculate nDCG scores and execute this [script](/code/evaluation/calculate_gain.py), run the following command:
+In order to calculate nDCG scores and execute this [script](/code/calculate_gain.py), run the following command:
 
 ```
-python3 code/evaluation/calculate_gain.py [-i INPUT]  [-o OUTPUT]
+python3 code/calculate_gain.py [-i INPUT]  [-o OUTPUT]
 ```
 
 You must pass the following two arguments:
@@ -211,13 +226,20 @@ You must pass the following two arguments:
 For example, if you are running the code from the code folder and have the 4 column RELISH TSV file in the data folder, run the matrix creation for the first hyperparameter as:
 
 ```
-python3 code/evaluation/calculate_gain.py -i data/cosine_similarity_0.tsv -o data/ndcg_fasttext_0.tsv
+python3 code/calculate_gain.py -i data/cosine_similarity_0.tsv -o data/ndcg_fasttext_0.tsv
 ```
 
+Note: You would have to run the above command for every hyperparameter configuration by changing the file name for the cosine similarity file or use the following shell script to generate all files at once.
+
+```
+for VALUE in {0..17};do
+python3 code/calculate_gain.py -i data/cosine/cosine_similarity_${VALUE}.tsv -o data/gain/ndcg_${VALUE}.tsv
+done
+```
 
 ### Step 8: Compile Results
 
-In order to compile the average result values for Precison@ and nDCG@N and generate a single TSV file each, please use this [script](code/evaluation/show_avg.py).
+In order to compile the average result values for Precison@ and nDCG@N and generate a single TSV file each, please use this [script](code/show_avg.py).
 
 You must pass the following two arguments:
 
@@ -228,7 +250,7 @@ You must pass the following two arguments:
 If you are running the code from the code folder, run the compilation script as:
 
 ```
-python3 code/evaluation/show_avg.py -i data/output/gain_matrices/ -o data/output/results_gain.tsv
+python3 code/show_avg.py -i data/gain_matrices/ -o data/results_gain.tsv
 ```
 
 NOTE: Please do not forget to put a `'/'` at the end of the input file path.

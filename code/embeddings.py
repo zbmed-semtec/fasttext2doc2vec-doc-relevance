@@ -1,5 +1,7 @@
 import os
 import sys
+import yaml
+import itertools
 import logging
 import argparse
 import pandas as pd
@@ -8,9 +10,6 @@ import typing
 from typing import Any, List, Iterable
 from gensim.models import FastText
 from gensim.models.fasttext import load_facebook_model
-
-log_file = "fasttext.log"
-logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
 
 
 def prepare_from_npy(filepathIn=None):
@@ -52,6 +51,23 @@ def prepare_from_npy(filepathIn=None):
                         abstracts.append(line[2])
                         docs.append(line[1] + line[2])
                 return (pmids, titles, abstracts, docs)
+
+def generate_param_combinations(params):
+    param_keys = []
+    param_values = []
+    
+    for key, value in params.items():
+        if 'values' in value:  # Check if 'values' exist in this parameter
+            param_keys.append(key)
+            param_values.append(value['values'])
+        else:
+            param_keys.append(key)
+            param_values.append([value['value']])  # Use the single value as a list
+    
+    param_combinations = [dict(zip(param_keys, combination)) 
+                          for combination in itertools.product(*param_values)]
+    
+    return param_combinations
 
 
 def load_pretrained_model(model_filepath: str):
@@ -106,7 +122,7 @@ def save_model(model: FastText, output_file: str) -> None:
     model.save(output_file)
 
 
-def create_document_embeddings(pmids: list, documents: list, model, output_dir_path: str) -> None:
+def create_document_embeddings(pmids: list, documents: list, model: FastText, iteration: int, output_dir_path: str) -> None:
     """
     Generates document embeddings from the generated Word2Vec model.
     Parameters
@@ -115,8 +131,10 @@ def create_document_embeddings(pmids: list, documents: list, model, output_dir_p
         List of accession numbers.
     documents : list
         List of function comments.
-    model : 
-        Pretraine Fasttext model.
+    model : fastText
+        Pretrained FastText model.
+    iteration: int
+        Hyperparameter configuration number.
     output_dir_path: str
         File path for the generated embeddings.
     """
@@ -151,22 +169,33 @@ def create_document_embeddings(pmids: list, documents: list, model, output_dir_p
 
     df = pd.DataFrame(list(zip((pmids), document_embeddings)), columns =['pmids', 'embeddings'])
     df = df.sort_values('pmids')
-    df.to_pickle(output_dir_path)
+    os.makedirs(f"{output_dir_path}", exist_ok=True)
+    df.to_pickle(f'{output_dir_path}/embeddings_{iteration}.pkl') 
     print("Embeddings Generated")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", type=str, help="Path to input RELISH tokenized .npy file")
-    parser.add_argument("-p", "--pre_trained_model", type=int, default=None, help="Path to pre-trained model")               
     parser.add_argument("-o", "--output", type=str, help="Path to save embeddings pickle file")                 
+    parser.add_argument("-p", "--params", type=str, help="Path to hyperparameter yaml file.")
     args = parser.parse_args()
 
+    params = []
+    with open(args.params, "r") as file:
+        content = yaml.safe_load(file)
+        params = content['params']
+
+    param_combinations = generate_param_combinations(params)
+    model_output_file_base = "./data/models/fasttext_model"
+    model_output_dir = os.path.dirname(model_output_file_base)
+    if not os.path.exists(model_output_dir):
+        os.makedirs(model_output_dir)
+
     pmids, titles, abstracts, docs = prepare_from_npy(args.input)
-    if args.pre_trained_model and os.path.isfile(args.pre_trained_model): 
-        model = load_pretrained_model(args.model)
-    else:
-        params = {'sg': 0, 'vector_size':200, 'epochs':15, 'window':5, 'min_count':5, 'workers':8}
-        model = create_fasttext_model(pmids, docs, params)
-        save_model(model, "data/fasttext.model")
-    create_document_embeddings(pmids, docs, model, args.output)
+    for i, param_set in enumerate(param_combinations):
+        print(f"Training model with hyperparameters: {param_set}")
+        model = create_fasttext_model(pmids, docs, param_set)
+        model_output_file = f"{model_output_file_base}_{i}"
+        save_model(model, model_output_file)
+        create_document_embeddings(pmids, docs, model, i, args.output)
