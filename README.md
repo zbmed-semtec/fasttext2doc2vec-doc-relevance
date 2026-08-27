@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15095937.svg)](https://doi.org/10.5281/zenodo.15095937) 
 ![Status](https://img.shields.io/badge/Status-inactive-orange)
 
 
